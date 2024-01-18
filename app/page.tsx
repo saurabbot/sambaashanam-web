@@ -20,6 +20,7 @@ export default function Home() {
   const [state, setState] = useState(initialState);
   const cameraVideoRef = useRef<HTMLVideoElement>(null);
   const screenVideoRef = useRef<HTMLVideoElement>(null);
+  let combinedStream: MediaStream = new MediaStream();
   const getVoicePermission = async () => {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({
@@ -45,6 +46,7 @@ export default function Home() {
     if (stream && cameraVideoRef.current) {
       cameraVideoRef.current.srcObject = stream;
       cameraVideoRef.current.play();
+      stream.getTracks().forEach((track) => combinedStream.addTrack(track));
     }
   };
   const getScreenRecordingPermission = async () => {
@@ -60,8 +62,7 @@ export default function Home() {
       const stream = await getScreenRecordingPermission();
       if (stream !== undefined && screenVideoRef.current !== null) {
         screenVideoRef.current.srcObject = stream;
-        screenVideoRef.current.play();
-      }
+        screenVideoRef.current.play();      }
     } catch (err) {
       console.log(err);
     }
@@ -71,6 +72,7 @@ export default function Home() {
       screenVideoRef.current.srcObject = null;
     }
   };
+
   return (
     <main className="flex min-h-screen flex-col items-center justify-between p-24">
       Screen recorder App
